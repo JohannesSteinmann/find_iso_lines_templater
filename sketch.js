@@ -23,6 +23,7 @@ range_buffer = []
 value_buffer = []
 
 function setup() {
+  strokeWeight(0);
   createCanvas(grid_pixel_width + 300, grid_pixel_height);
   square_size_x = grid_pixel_width / grid_resolution[0]
   square_size_y = grid_pixel_height / grid_resolution[1]
@@ -250,9 +251,11 @@ function draw() {
       
       if (!show_tiles) {
         noStroke()
+      } else {
+        stroke(0)
       }
       rect(i * square_size_x, j * square_size_y, square_size_x, square_size_y,);
-
+      noStroke()
 
       if (show_values) {
         fill(0)
