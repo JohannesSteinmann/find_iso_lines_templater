@@ -11,7 +11,7 @@ random_displacement = false
 
 range = [3, 6]
 iso_value = 4.5
-discplacement_value = 0.2
+displacement_value = 0.2
 // grid_resolution = [16,16]
 // grid_pixel_width = 800
 // grid_pixel_height = 800
@@ -23,6 +23,7 @@ grid_pixel_height = 50 * grid_resolution[1]
 
 range_buffer = []
 value_buffer = []
+displacement_buffer = []
 
 function setup() {
   strokeWeight(0);
@@ -33,8 +34,10 @@ function setup() {
   // initialize buffer
   for (let i = 0; i < grid_resolution[0]; i++) {
     range_buffer.push([])
+    displacement_buffer.push([])
     for (let j = 0; j < grid_resolution[1]; j++) {
       range_buffer[i].push(0)
+      displacement_buffer[i].push([0,0])
     }
   }
 
@@ -78,15 +81,20 @@ function setup() {
   checkbox5.changed(toggle_random_displacement);
   checkbox5.style('margin-top', label_top_padding);
 
-  let discplacement_label = createDiv('Displacement distance:');
-  discplacement_label.parent(container);
-  discplacement_input = createInput();
-  discplacement_input.parent(container);
-  discplacement_input.value(discplacement_value);
-  discplacement_input.input(update_discplacement_value);
-  discplacement_input.style('margin-bottom', label_top_padding);
-
-
+  let displacement_label = createDiv('Displacement distance:');
+  displacement_label.parent(container);
+  displacement_input = createInput();
+  displacement_input.parent(container);
+  displacement_input.value(displacement_value);
+  displacement_input.input(update_displacement_value);
+  
+  
+  // create button to generate new displacements
+  let button8 = createButton('Generate displacements');
+  button8.parent(container);
+  button8.mousePressed(generate_displacements);
+  button8.style('margin-bottom', label_top_padding);
+  
 
 
   // add inputs for range and iso value
@@ -187,8 +195,8 @@ function update_iso_value() {
   // generate_values()
 }
 
-function update_discplacement_value() {
-  discplacement_value = iso_input.value()
+function update_displacement_value() {
+  displacement_value = displacement_input.value()
 }
 
 function clear_grid() {
@@ -244,6 +252,25 @@ function generate_values() {
 }
 
 
+function generate_displacements() {
+
+  // generate random d
+  // if range_buffer is 1, value above iso_value, else below
+
+  displacement_buffer = []
+  for (let i = 0; i < grid_resolution[0]; i++) {
+    displacement_buffer.push([])
+    for (let j = 0; j < grid_resolution[1]; j++) {
+      displacement_buffer[i].push([displacement_value - random(displacement_value * 2), displacement_value - random(displacement_value * 2)])
+    }
+  }
+
+  // console.log('random displacements:')
+  // console.log(displacement_buffer)
+
+}
+
+
 
 function draw() {
   background(220);
@@ -293,9 +320,19 @@ function draw() {
       noStroke()
 
       if (show_values) {
+
+        displacement_x = 0
+        displacement_y = 0
+
+        if (random_displacement) {
+          displacement_x = displacement_buffer[i][j][0]
+          displacement_y = displacement_buffer[i][j][1]
+        }
+
+
         fill(0)
         value_text = str(discrete_values ? '  ' + floor(value_buffer[i][j]) : value_buffer[i][j].toFixed(2) )        
-        text(value_text, square_size_x / 4 + i * square_size_x + 5, square_size_y / 3 + j * square_size_y + 15)
+        text(value_text, square_size_x / 4 + i * square_size_x + 5 + displacement_x, square_size_y / 3 + j * square_size_y + 15 + displacement_y)
       }
     }
   }
