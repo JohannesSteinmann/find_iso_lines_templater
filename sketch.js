@@ -6,6 +6,7 @@
 show_values = true
 discrete_values = true
 show_tile_colors = true
+show_tiles = true
 
 range = [3, 6]
 iso_value = 4.5
@@ -22,7 +23,7 @@ range_buffer = []
 value_buffer = []
 
 function setup() {
-  createCanvas(grid_pixel_width + 200, grid_pixel_height);
+  createCanvas(grid_pixel_width + 300, grid_pixel_height);
   square_size_x = grid_pixel_width / grid_resolution[0]
   square_size_y = grid_pixel_height / grid_resolution[1]
 
@@ -34,15 +35,18 @@ function setup() {
     }
   }
 
-  label_top_padding = 35 + 'px'
-
   generate_values()
+
+
+
+
+  label_top_padding = 35 + 'px'
   // create container div
   let container = createDiv();
   container.style('display', 'flex');
   container.style('flex-direction', 'column');
   container.style('gap', '10px');
-  container.position(grid_pixel_width + 10, 10);
+  container.position(grid_pixel_width + 10, 100);
 
   // create button to toggle between discrete and continuous
   let button = createButton('Toggle Discrete Values');
@@ -72,41 +76,33 @@ function setup() {
 
 
   // create button to clear the grid
+  let button7 = createButton('Toggle Tiles');
+  button7.parent(container);
+  button7.mousePressed(toggle_show_tiles);
+
+  // create button to clear the grid
   let button6 = createButton('Export Screenshot');
   button6.parent(container);
   button6.mousePressed(export_screenshot);
 
+  // add inputs for range and iso value
+  let range_label = createDiv('Range:');
+  range_label.parent(container);
+  range_label.style('padding-top', label_top_padding);
+  range_input = createInput();
+  range_input.parent(container);
+  range_input.value(range);
+  range_input.input(update_range);
+  
+  let iso_label = createDiv('Iso Value:');
+  iso_label.parent(container);
+  iso_label.style('padding-top', label_top_padding);
+  iso_input = createInput();
+  iso_input.parent(container);
+  iso_input.value(iso_value);
+  iso_input.input(update_iso_value);
 
 
-
-  // create range_slider button group label
-  let range_sliderLabel = createDiv('Upper Range:');
-  range_sliderLabel.parent(container);
-  range_sliderLabel.style('padding-top', label_top_padding);
-  // upper range slider
-  range_slider = createSlider(0, 10, range[1], 0.1);
-  range_slider.parent(container);
-  range_slider.input(update_range);
-
-
-  // create range_slider2 button group label
-  let range_slider2Label = createDiv('Lower Range:');
-  range_slider2Label.parent(container);
-  range_slider2Label.style('padding-top', label_top_padding);
-  // lower range slider
-  range_slider2 = createSlider(0, 10, range[0], 0.1);
-  range_slider2.parent(container);
-  range_slider2.input(update_range);
-
-
-  // create iso_value_slider button group label
-  let iso_value_sliderLabel = createDiv('Iso Value:');
-  iso_value_sliderLabel.parent(container);
-  iso_value_sliderLabel.style('padding-top', label_top_padding);
-  // iso value slider
-  iso_value_slider = createSlider(0, 10, iso_value, 0.1);
-  iso_value_slider.parent(container);
-  iso_value_slider.input(update_iso_value);
 
   // create radio button group label
   let radioLabel = createDiv('Drawing Mode:');
@@ -138,19 +134,24 @@ function export_screenshot() {
   resizeCanvas(originalWidth, originalHeight);
 }
 
+function toggle_show_tiles() {
+  show_tiles = !show_tiles
+}
+
 function handleRadioChange() {
   let val = drawmode_radio.value();
   console.log(val);
 }
 
 function update_range() {
-  range = [range_slider2.value(), range_slider.value()]
+  range = range_input.value().split(',').map(Number)
   // generate_values()
 }
 
 
 function update_iso_value() {
-  iso_value = iso_value_slider.value()
+
+  iso_value = iso_input.value()
   // generate_values()
 }
 
@@ -212,6 +213,12 @@ function draw() {
   background(220);
 
 
+  // draw range and iso value text
+
+  // if (!show_tiles) {
+  //   fill(255)
+  //   rect(0,0,grid_pixel_width, grid_pixel_height)
+  // }
 
 
   for (let i = 0; i < grid_resolution[0]; i++) {
@@ -241,7 +248,11 @@ function draw() {
 
 
       
-      rect(i * square_size_x, j * square_size_y, square_size_x, square_size_y);
+      if (!show_tiles) {
+        noStroke()
+      }
+      rect(i * square_size_x, j * square_size_y, square_size_x, square_size_y,);
+
 
       if (show_values) {
         fill(0)
