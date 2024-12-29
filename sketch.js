@@ -49,15 +49,26 @@ function setup() {
   container.style('gap', '10px');
   container.position(grid_pixel_width + 10, 100);
 
-  // create button to toggle between discrete and continuous
-  let button = createButton('Toggle Discrete Values');
-  button.parent(container);
-  button.mousePressed(toggle_discrete);
+  // create checkbox to toggle between discrete and continuous
+  let checkbox1 = createCheckbox('Discrete Values only', discrete_values);
+  checkbox1.parent(container);
+  checkbox1.changed(toggle_discrete);
 
-  // create button to toggle show values
-  let button2 = createButton('Show values');
-  button2.parent(container);
-  button2.mousePressed(toggle_show_values);
+  // create checkbox to toggle show values
+  let checkbox2 = createCheckbox('Show values', show_values);
+  checkbox2.parent(container);
+  checkbox2.changed(toggle_show_values);
+
+  // create checkbox to toggle tile colors
+  let checkbox3 = createCheckbox('Show Tile Colors', show_tile_colors);
+  checkbox3.parent(container);
+  checkbox3.changed(toggle_tile_colors);
+
+  // create checkbox to toggle show tiles
+  let checkbox4 = createCheckbox('Toggle Tiles', show_tiles);
+  checkbox4.parent(container);
+  checkbox4.changed(toggle_show_tiles);
+
 
   // create button to generate new values
   let button3 = createButton('Generate values');
@@ -68,18 +79,6 @@ function setup() {
   let button4 = createButton('Clear Grid');
   button4.parent(container);
   button4.mousePressed(clear_grid);
-
-
-  // create button to clear the grid
-  let button5 = createButton('Toggle Tile Colors');
-  button5.parent(container);
-  button5.mousePressed(toggle_tile_colors);
-
-
-  // create button to clear the grid
-  let button7 = createButton('Toggle Tiles');
-  button7.parent(container);
-  button7.mousePressed(toggle_show_tiles);
 
   // create button to clear the grid
   let button6 = createButton('Export Screenshot');
@@ -152,7 +151,8 @@ function update_range() {
 
 function update_iso_value() {
 
-  iso_value = iso_input.value()
+  iso_value = min(max(iso_input.value(), range[0]),range[1])
+  iso_input.value(iso_value)
   // generate_values()
 }
 
@@ -259,7 +259,7 @@ function draw() {
 
       if (show_values) {
         fill(0)
-        value_text = str(discrete_values ? value_buffer[i][j].toFixed(2) : '  ' + floor(value_buffer[i][j]) )        
+        value_text = str(discrete_values ? '  ' + floor(value_buffer[i][j]) : value_buffer[i][j].toFixed(2) )        
         text(value_text, square_size_x / 4 + i * square_size_x + 5, square_size_y / 3 + j * square_size_y + 15)
       }
     }
