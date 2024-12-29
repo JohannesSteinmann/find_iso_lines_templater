@@ -7,9 +7,11 @@ show_values = true
 discrete_values = true
 show_tile_colors = true
 show_tiles = true
+random_displacement = false
 
 range = [3, 6]
 iso_value = 4.5
+discplacement_value = 0.2
 // grid_resolution = [16,16]
 // grid_pixel_width = 800
 // grid_pixel_height = 800
@@ -70,20 +72,22 @@ function setup() {
   checkbox4.changed(toggle_show_tiles);
 
 
-  // create button to generate new values
-  let button3 = createButton('Generate values');
-  button3.parent(container);
-  button3.mousePressed(generate_values);
+  // create checkbox to toggle show tiles
+  let checkbox5 = createCheckbox('Random Displacement', random_displacement);
+  checkbox5.parent(container);
+  checkbox5.changed(toggle_random_displacement);
+  checkbox5.style('margin-top', label_top_padding);
 
-  // create button to clear the grid
-  let button4 = createButton('Clear Grid');
-  button4.parent(container);
-  button4.mousePressed(clear_grid);
+  let discplacement_label = createDiv('Displacement distance:');
+  discplacement_label.parent(container);
+  discplacement_input = createInput();
+  discplacement_input.parent(container);
+  discplacement_input.value(discplacement_value);
+  discplacement_input.input(update_discplacement_value);
+  discplacement_input.style('margin-bottom', label_top_padding);
 
-  // create button to clear the grid
-  let button6 = createButton('Export Screenshot');
-  button6.parent(container);
-  button6.mousePressed(export_screenshot);
+
+
 
   // add inputs for range and iso value
   let range_label = createDiv('Range:');
@@ -96,26 +100,48 @@ function setup() {
   
   let iso_label = createDiv('Iso Value:');
   iso_label.parent(container);
-  iso_label.style('padding-top', label_top_padding);
+  // iso_label.style('padding-top', label_top_padding);
   iso_input = createInput();
   iso_input.parent(container);
   iso_input.value(iso_value);
   iso_input.input(update_iso_value);
 
 
-
   // create radio button group label
   let radioLabel = createDiv('Drawing Mode:');
   radioLabel.parent(container);
-  radioLabel.style('padding-top', label_top_padding);
+  radioLabel.style('margin-top', '20px');
+  radioLabel.style('margin-bottom', '20px');
   // create radio button group
   drawmode_radio = createRadio();
   drawmode_radio.option('Below');
   drawmode_radio.option('Iso');
   drawmode_radio.option('Above');
-  drawmode_radio.parent(container);
-  drawmode_radio.selected('Iso');
+  drawmode_radio.parent(radioLabel);
+  drawmode_radio.selected('Above');
   drawmode_radio.changed(handleRadioChange);
+
+  // create button to generate new values
+  let button3 = createButton('Generate values');
+  button3.parent(container);
+  button3.mousePressed(generate_values);
+
+  // create button to clear the grid
+  let button4 = createButton('Clear Grid');
+  button4.parent(container);
+  button4.mousePressed(clear_grid);
+
+
+
+
+
+  // create button to clear the grid
+  let button6 = createButton('Export Screenshot');
+  button6.parent(container);
+  button6.mousePressed(export_screenshot);
+  button6.style('margin-top', '150px');
+  button6.style('padding-top', label_top_padding);
+  button6.style('padding-bottom', label_top_padding);
 
 }
 
@@ -138,6 +164,11 @@ function toggle_show_tiles() {
   show_tiles = !show_tiles
 }
 
+
+function toggle_random_displacement() {
+  random_displacement = !random_displacement
+}
+
 function handleRadioChange() {
   let val = drawmode_radio.value();
   console.log(val);
@@ -154,6 +185,10 @@ function update_iso_value() {
   iso_value = min(max(iso_input.value(), range[0]),range[1])
   iso_input.value(iso_value)
   // generate_values()
+}
+
+function update_discplacement_value() {
+  discplacement_value = iso_input.value()
 }
 
 function clear_grid() {
