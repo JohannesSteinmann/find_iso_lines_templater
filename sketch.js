@@ -8,22 +8,24 @@ discrete_values = true
 show_tile_colors = true
 show_tiles = true
 random_displacement = false
+random_text_color = false
 
 range = [3, 6]
 iso_value = 4.5
 displacement_value = 0.2
-// grid_resolution = [16,16]
-// grid_pixel_width = 800
-// grid_pixel_height = 800
 
 
+
+tile_size = 50
 grid_resolution = [16,20]
-grid_pixel_width = 50 * grid_resolution[0]
-grid_pixel_height = 50 * grid_resolution[1]
+grid_pixel_width = tile_size * grid_resolution[0]
+grid_pixel_height = tile_size * grid_resolution[1]
 
 range_buffer = []
 value_buffer = []
 displacement_buffer = []
+text_color_buffer = []
+
 
 function setup() {
   strokeWeight(0);
@@ -31,28 +33,55 @@ function setup() {
   square_size_x = grid_pixel_width / grid_resolution[0]
   square_size_y = grid_pixel_height / grid_resolution[1]
 
-  // initialize buffer
+  // initialize range buffer and displacement buffer
   for (let i = 0; i < grid_resolution[0]; i++) {
     range_buffer.push([])
     displacement_buffer.push([])
+    
     for (let j = 0; j < grid_resolution[1]; j++) {
       range_buffer[i].push(0)
-      displacement_buffer[i].push([0,0])
+      displacement_buffer[i].push([0, 0])
     }
   }
 
-  generate_values()
+
+
+  random_colors = [color('Blue'), color('Red'), color('Green')]
+
+  generate_data()
+  generate_text_colors()
+  // generate_text_colors()
+
+
+
+  textAlign('center')
+
 
 
 
 
   label_top_padding = 35 + 'px'
+
+
+
+
+
   // create container div
   let container = createDiv();
   container.style('display', 'flex');
   container.style('flex-direction', 'column');
   container.style('gap', '10px');
-  container.position(grid_pixel_width + 10, 100);
+  container.position(grid_pixel_width + 10, 10);
+
+
+  // create button to clear the grid
+  let button6 = createButton('Export as PNG');
+  button6.parent(container);
+  button6.mousePressed(export_screenshot);
+  button6.style('margin-bottom', '20px');
+  button6.style('padding-top', label_top_padding);
+  button6.style('padding-bottom', label_top_padding);
+
 
   // create checkbox to toggle between discrete and continuous
   let checkbox1 = createCheckbox('Discrete Values only', discrete_values);
@@ -94,6 +123,35 @@ function setup() {
   button8.parent(container);
   button8.mousePressed(generate_displacements);
   button8.style('margin-bottom', label_top_padding);
+
+
+
+
+
+
+
+  // create checkbox to toggle show tiles
+  let color_checkbox = createCheckbox('Random Text Colors', random_text_color);
+  color_checkbox.parent(container);
+  color_checkbox.changed(toggle_random_text_color);
+  color_checkbox.style('margin-top', label_top_padding);
+
+
+
+  // =============== NICE TO HAVE: enter random colors as list of strings for random text colors
+  // let text_color_label = createDiv('text_color distance:');
+  // text_color_label.parent(container);
+  // text_color_input = createInput();
+  // text_color_input.parent(container);
+  // text_color_input.value(text_color_value);
+  // text_color_input.input(update_text_color_value);
+  
+  
+  // create button to generate new displacements
+  let button_colors = createButton('Generate Text Colors');
+  button_colors.parent(container);
+  button_colors.mousePressed(generate_text_colors);
+  button_colors.style('margin-bottom', label_top_padding);
   
 
 
@@ -132,7 +190,7 @@ function setup() {
   // create button to generate new values
   let button3 = createButton('Generate values');
   button3.parent(container);
-  button3.mousePressed(generate_values);
+  button3.mousePressed(generate_data);
 
   // create button to clear the grid
   let button4 = createButton('Clear Grid');
@@ -142,14 +200,6 @@ function setup() {
 
 
 
-
-  // create button to clear the grid
-  let button6 = createButton('Export Screenshot');
-  button6.parent(container);
-  button6.mousePressed(export_screenshot);
-  button6.style('margin-top', '150px');
-  button6.style('padding-top', label_top_padding);
-  button6.style('padding-bottom', label_top_padding);
 
 }
 
@@ -184,7 +234,7 @@ function handleRadioChange() {
 
 function update_range() {
   range = range_input.value().split(',').map(Number)
-  // generate_values()
+  // generate_data()
 }
 
 
@@ -192,7 +242,7 @@ function update_iso_value() {
 
   iso_value = min(max(iso_input.value(), range[0]),range[1])
   iso_input.value(iso_value)
-  // generate_values()
+  // generate_data()
 }
 
 function update_displacement_value() {
@@ -211,6 +261,11 @@ function toggle_show_values() {
   show_values = !show_values
 }
 
+
+function toggle_random_text_color() {
+  random_text_color = !random_text_color
+}
+
 function toggle_tile_colors() {
   show_tile_colors = !show_tile_colors
 }
@@ -218,10 +273,10 @@ function toggle_tile_colors() {
 
 function toggle_discrete() {
   discrete_values = !discrete_values
-  // generate_values()
+  // generate_data()
 }
 
-function generate_values() {
+function generate_data() {
   
   // generate random values
   // if range_buffer is 1, value above iso_value, else below
@@ -230,8 +285,6 @@ function generate_values() {
   for (let i = 0; i < grid_resolution[0]; i++) {
     value_buffer.push([])
     for (let j = 0; j < grid_resolution[1]; j++) {
-
-
 
       if (range_buffer[i][j] == 0) {
         value_buffer[i].push(random(range[0], iso_value))
@@ -269,6 +322,21 @@ function generate_displacements() {
   // console.log(displacement_buffer)
 
 }
+function generate_text_colors() {
+
+  // generate random d
+  // if range_buffer is 1, value above iso_value, else below
+
+  text_color_buffer = []
+  for (let i = 0; i < grid_resolution[0]; i++) {
+    text_color_buffer.push([])
+    for (let j = 0; j < grid_resolution[1]; j++) {
+      text_color_buffer[i].push(random_colors[floor(random(random_colors.length))])
+      
+    }
+  }
+  // console.log(random_colors.length)
+}
 
 
 
@@ -286,20 +354,8 @@ function draw() {
 
   for (let i = 0; i < grid_resolution[0]; i++) {
     for (let j = 0; j < grid_resolution[1]; j++) {
-      // if (range_buffer[i][j] == 0) {
-      //   fill(255);
-      // }
-      // else if (range_buffer[i][j] == 1) {
-      //   if (show_values) {
-      //     fill(100)
-      //   } else {
-      //     fill(0);
-      //   }
-      // }
-      // circle(square_size_x / 2 + i * square_size_x, square_size_y / 2 + j * square_size_y, 40, 40);
 
       fill(255);
-
       if (show_tile_colors) {
         if (range_buffer[i][j] == 1) {
           fill(color('Orange'));
@@ -309,7 +365,8 @@ function draw() {
         }
       }
 
-
+      // generate_text_colors()
+      // generate_displacements()
       
       if (!show_tiles) {
         noStroke()
@@ -331,20 +388,24 @@ function draw() {
 
 
         fill(0)
-        value_text = str(discrete_values ? '  ' + floor(value_buffer[i][j]) : value_buffer[i][j].toFixed(2) )        
-        text(value_text, square_size_x / 4 + i * square_size_x + 5 + displacement_x, square_size_y / 3 + j * square_size_y + 15 + displacement_y)
+        if (random_text_color && text_color_buffer.length > 0) {
+          fill(text_color_buffer[i][j])
+        }
+
+        vertical_text_offset = 5
+        value_text = str(discrete_values ? '' + floor(value_buffer[i][j]) : value_buffer[i][j].toFixed(2))
+        text(value_text, square_size_x / 2 + i * square_size_x + displacement_x, square_size_y / 2 + j * square_size_y + vertical_text_offset + displacement_y)
+        
+
+        fill(0)
       }
     }
   }
 
-  //when mouse button is pressed, circles turn black
+  //handle drawing with pressed mouse
   if (mouseX < grid_pixel_width && mouseY < grid_pixel_height) {
     fill(150)
     text(str(floor(mouseX / square_size_x) + '-' + floor(mouseY / square_size_y)), mouseX, mouseY)
-    
-    // if mouse pressed and shift-key on hold set range_buffer on that location = 0
-
-    
     
     if (mouseIsPressed) {
 
@@ -356,6 +417,4 @@ function draw() {
       range_buffer[floor(mouseX / square_size_x)][floor(mouseY / square_size_y)] = drawmode
     }
   }
-  //white circles drawn at mouse position
-  // circle(mouseX, mouseY, 100);
 }
