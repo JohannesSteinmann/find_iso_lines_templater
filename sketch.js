@@ -303,8 +303,40 @@ function export_screenshot() {
   // Resize the canvas to grid pixel values
   resizeCanvas(grid_pixel_width, grid_pixel_height);
 
-  // Take a screenshot and open a dialog window for saving
-  saveCanvas('screenshot', 'png');
+  // Take a screenshot and open a dialog window for saving with recommended name
+
+  let export_name = grid_resolution[0] + 'x' + grid_resolution[1] + '_'
+  
+  
+  // convert range buffer to set
+  let contains_0 = false
+  let contains_1 = false
+  let contains_2 = false
+
+  for (let i = 0; i < grid_resolution[0]; i++) {
+    for (let j = 0; j < grid_resolution[1]; j++) {
+      if (range_buffer[i][j] == 0) { contains_0 = true }
+      if (range_buffer[i][j] == 1) { contains_1 = true }
+      if (range_buffer[i][j] == 2) { contains_2 = true }
+    }
+  }
+
+  if (contains_0 && contains_1 && contains_2) {
+    export_name = export_name + "_allvalues"
+  } else if (contains_0 && contains_1) {
+    export_name = export_name + "_onlyiso"
+  } else if (contains_0 && contains_2) {
+    export_name = export_name + "_onlyabove"
+  }
+
+  export_name = export_name + "_iso" + iso_value + "_"
+
+  if (show_tile_colors) {
+    export_name = export_name + "_colored"
+  }
+  
+  saveCanvas(export_name, 'png');
+  
 
   // Restore the original canvas size
   resizeCanvas(originalWidth, originalHeight);
