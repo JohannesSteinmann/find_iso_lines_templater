@@ -324,12 +324,17 @@ function export_screenshot() {
   if (contains_0 && contains_1 && contains_2) {
     export_name = export_name + "_allvalues"
   } else if (contains_0 && contains_1) {
-    export_name = export_name + "_onlyiso"
+    export_name = export_name + "_isoonly"
   } else if (contains_0 && contains_2) {
-    export_name = export_name + "_onlyabove"
+    export_name = export_name + "_aboveonly"
   }
 
-  export_name = export_name + "_iso" + iso_value + "_"
+
+  if (descrete_values) {
+    export_name = export_name + "_iso" + Math.floor(iso_value) + "_"
+  } else {
+    export_name = export_name + "_iso" + iso_value + "_"
+  }
 
   if (show_tile_colors) {
     export_name = export_name + "_colored"
