@@ -17,7 +17,7 @@ displacement_value = 0.2
 
 
 tile_size = 50
-grid_resolution = [11, 11]
+grid_resolution = [21, 21]
 grid_pixel_width = tile_size * grid_resolution[0]
 grid_pixel_height = tile_size * grid_resolution[1]
 
@@ -206,6 +206,11 @@ function setup() {
   button4.parent(container);
   button4.mousePressed(clear_grid);
 
+  // create button to invert the range buffer
+  let button5 = createButton('Invert Range Buffer');
+  button5.parent(container);
+  button5.mousePressed(invert_range_buffer);
+
 
 }
 
@@ -214,8 +219,12 @@ function setup() {
 // load image from file
 function handleImportFile(file) {
   if (file.type === 'image') {
-  
+
     loadImage(file.data, img => {
+
+
+
+
       // Convert the image to grayscale
       img.filter(GRAY);
 
@@ -227,8 +236,16 @@ function handleImportFile(file) {
       for (let i = 0; i < grid_resolution[0]; i++) {
         for (let j = 0; j < grid_resolution[1]; j++) {
           let index = (i + j * grid_resolution[0]) * 4;
-          let grayValue = img.pixels[index] / 255; // Normalize to [0, 1]
-          range_buffer[i][j] = Math.floor(grayValue * 2); // Map to [0, 2]
+
+          // normalize so that max value is 1
+          let max_value = img.pixels.reduce((a, b) => Math.max(a, b))
+          let grayValue = img.pixels[index] / max_value; // Normalize to [0, 1]
+          
+
+
+          range_buffer[i][j] = Math.round(grayValue * 2); // Map to [0, 2]
+          
+          // range_buffer[i][j] = Math.round(grayValue * 2); // Map to [0, 2]
         }
       }
 
@@ -250,6 +267,15 @@ function handleImportFile(file) {
 
 // apply picture to range_buffer
 
+
+function invert_range_buffer() {
+
+  for (let i = 0; i < grid_resolution[0]; i++) {
+    for (let j = 0; j < grid_resolution[1]; j++) {
+      range_buffer[i][j] = 2 - range_buffer[i][j]
+    }
+  }
+}
 
 
 function import_png() {
@@ -410,7 +436,6 @@ function generate_text_colors() {
     text_color_buffer.push([])
     for (let j = 0; j < grid_resolution[1]; j++) {
       text_color_buffer[i].push(random_colors[floor(random(random_colors.length))])
-
     }
   }
   // console.log(random_colors.length)
