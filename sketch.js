@@ -10,14 +10,14 @@ show_tiles = true
 random_displacement = false
 random_text_color = false
 
-range = [3, 6]
+range = [1, 10]
 iso_value = 4.5
 displacement_value = 0.2
 
 
 
 tile_size = 50
-grid_resolution = [16,20]
+grid_resolution = [11, 11]
 grid_pixel_width = tile_size * grid_resolution[0]
 grid_pixel_height = tile_size * grid_resolution[1]
 
@@ -37,7 +37,7 @@ function setup() {
   for (let i = 0; i < grid_resolution[0]; i++) {
     range_buffer.push([])
     displacement_buffer.push([])
-    
+
     for (let j = 0; j < grid_resolution[1]; j++) {
       range_buffer[i].push(0)
       displacement_buffer[i].push([0, 0])
@@ -116,8 +116,8 @@ function setup() {
   displacement_input.parent(container);
   displacement_input.value(displacement_value);
   displacement_input.input(update_displacement_value);
-  
-  
+
+
   // create button to generate new displacements
   let button8 = createButton('Generate displacements');
   button8.parent(container);
@@ -145,14 +145,14 @@ function setup() {
   // text_color_input.parent(container);
   // text_color_input.value(text_color_value);
   // text_color_input.input(update_text_color_value);
-  
-  
+
+
   // create button to generate new displacements
   let button_colors = createButton('Generate Text Colors');
   button_colors.parent(container);
   button_colors.mousePressed(generate_text_colors);
   button_colors.style('margin-bottom', label_top_padding);
-  
+
 
 
   // add inputs for range and iso value
@@ -163,7 +163,7 @@ function setup() {
   range_input.parent(container);
   range_input.value(range);
   range_input.input(update_range);
-  
+
   let iso_label = createDiv('Iso Value:');
   iso_label.parent(container);
   // iso_label.style('padding-top', label_top_padding);
@@ -196,9 +196,6 @@ function setup() {
   let button4 = createButton('Clear Grid');
   button4.parent(container);
   button4.mousePressed(clear_grid);
-
-
-
 
 
 }
@@ -240,7 +237,7 @@ function update_range() {
 
 function update_iso_value() {
 
-  iso_value = min(max(iso_input.value(), range[0]),range[1])
+  iso_value = min(max(iso_input.value(), range[0]), range[1])
   iso_input.value(iso_value)
   // generate_data()
 }
@@ -255,6 +252,7 @@ function clear_grid() {
       range_buffer[i][j] = 0
     }
   }
+  generate_data()
 }
 
 function toggle_show_values() {
@@ -277,9 +275,10 @@ function toggle_discrete() {
 }
 
 function generate_data() {
-  
+
   // generate random values
   // if range_buffer is 1, value above iso_value, else below
+
 
   value_buffer = []
   for (let i = 0; i < grid_resolution[0]; i++) {
@@ -287,7 +286,12 @@ function generate_data() {
     for (let j = 0; j < grid_resolution[1]; j++) {
 
       if (range_buffer[i][j] == 0) {
-        value_buffer[i].push(random(range[0], iso_value))
+
+        if (discrete_values) {
+          value_buffer[i].push(random(range[0], Math.floor(iso_value)))
+        } else {
+          value_buffer[i].push(random(range[0], iso_value))
+        }
       }
 
       if (range_buffer[i][j] == 1) {
@@ -295,10 +299,15 @@ function generate_data() {
       }
 
       if (range_buffer[i][j] == 2) {
-        value_buffer[i].push(random(iso_value, range[1]))
+
+        if (discrete_values) {
+          value_buffer[i].push(random(Math.ceil(iso_value), range[1]))
+        } else {
+          value_buffer[i].push(random(iso_value, range[1]))
+        }
       }
-      
-      
+
+
     }
   }
 
@@ -332,7 +341,7 @@ function generate_text_colors() {
     text_color_buffer.push([])
     for (let j = 0; j < grid_resolution[1]; j++) {
       text_color_buffer[i].push(random_colors[floor(random(random_colors.length))])
-      
+
     }
   }
   // console.log(random_colors.length)
@@ -367,7 +376,7 @@ function draw() {
 
       // generate_text_colors()
       // generate_displacements()
-      
+
       if (!show_tiles) {
         noStroke()
       } else {
@@ -395,7 +404,7 @@ function draw() {
         vertical_text_offset = 5
         value_text = str(discrete_values ? '' + floor(value_buffer[i][j]) : value_buffer[i][j].toFixed(2))
         text(value_text, square_size_x / 2 + i * square_size_x + displacement_x, square_size_y / 2 + j * square_size_y + vertical_text_offset + displacement_y)
-        
+
 
         fill(0)
       }
@@ -406,13 +415,13 @@ function draw() {
   if (mouseX < grid_pixel_width && mouseY < grid_pixel_height) {
     fill(150)
     text(str(floor(mouseX / square_size_x) + '-' + floor(mouseY / square_size_y)), mouseX, mouseY)
-    
+
     if (mouseIsPressed) {
 
       drawmode = 0
 
-      if (drawmode_radio.value() === 'Iso') {drawmode = 1}
-      if (drawmode_radio.value() === 'Above') {drawmode = 2}
+      if (drawmode_radio.value() === 'Iso') { drawmode = 1 }
+      if (drawmode_radio.value() === 'Above') { drawmode = 2 }
 
       range_buffer[floor(mouseX / square_size_x)][floor(mouseY / square_size_y)] = drawmode
     }
