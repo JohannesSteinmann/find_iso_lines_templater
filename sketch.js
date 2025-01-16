@@ -305,7 +305,7 @@ function export_screenshot() {
 
   // Take a screenshot and open a dialog window for saving with recommended name
 
-  let export_name = grid_resolution[0] + 'x' + grid_resolution[1] + '_'
+  let export_name = grid_resolution[0] + 'x' + grid_resolution[1]
   
   
   // convert range buffer to set
