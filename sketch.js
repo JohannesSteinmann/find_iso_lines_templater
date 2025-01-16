@@ -17,7 +17,7 @@ displacement_value = 0.2
 
 
 tile_size = 50
-grid_resolution = [21, 21]
+grid_resolution = [3, 3]
 grid_pixel_width = tile_size * grid_resolution[0]
 grid_pixel_height = tile_size * grid_resolution[1]
 
@@ -330,7 +330,7 @@ function export_screenshot() {
   }
 
 
-  if (descrete_values) {
+  if (discrete_values) {
     export_name = export_name + "_iso" + Math.floor(iso_value) + "_"
   } else {
     export_name = export_name + "_iso" + iso_value + "_"
