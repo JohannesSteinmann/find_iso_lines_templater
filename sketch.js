@@ -78,9 +78,18 @@ function setup() {
   let button6 = createButton('Export as PNG');
   button6.parent(container);
   button6.mousePressed(export_screenshot);
-  button6.style('margin-bottom', '20px');
+  button6.style('margin-bottom', '10px');
   button6.style('padding-top', label_top_padding);
   button6.style('padding-bottom', label_top_padding);
+
+  // create button for import png
+  let button_import = createButton('import PNG');
+  button_import.parent(container);
+  button_import.mousePressed(import_png);
+  button_import.style('margin-bottom', '20px');
+  // button_import.style('padding-top', label_top_padding);
+  // button_import.style('padding-bottom', label_top_padding);
+
 
 
   // create checkbox to toggle between discrete and continuous
@@ -199,6 +208,66 @@ function setup() {
 
 
 }
+
+
+
+// load image from file
+function handleImportFile(file) {
+  if (file.type === 'image') {
+  
+    loadImage(file.data, img => {
+      // Convert the image to grayscale
+      img.filter(GRAY);
+
+      // Resize the image to grid size
+      img.resize(grid_resolution[0], grid_resolution[1]);
+
+      // Map the pixel values to [0, 2] and apply to range_buffer
+      img.loadPixels();
+      for (let i = 0; i < grid_resolution[0]; i++) {
+        for (let j = 0; j < grid_resolution[1]; j++) {
+          let index = (i + j * grid_resolution[0]) * 4;
+          let grayValue = img.pixels[index] / 255; // Normalize to [0, 1]
+          range_buffer[i][j] = Math.floor(grayValue * 2); // Map to [0, 2]
+        }
+      }
+
+
+      img.updatePixels();
+
+      // Optionally, you can call generate_data() or any other function to update the grid
+      generate_data();
+    });
+
+
+  } else {
+    console.log('Not an image file!');
+  }
+}
+
+
+// map picture values to interval [0;2]
+
+// apply picture to range_buffer
+
+
+
+function import_png() {
+  
+  console.log('importing png!')
+  // create hidden file input
+  let file_input = createFileInput(handleImportFile);
+  file_input.hide()
+  file_input.elt.click()
+  file_input.remove()
+}
+
+
+
+
+
+
+
 
 function export_screenshot() {
   // Save the current canvas size
