@@ -30,7 +30,7 @@ The grid resolution is still hard-coded in **sketch.js**
 ...
 
 tile_size = 50
-grid_resolution = [63, 63]
+grid_resolution = [21, 21]
 grid_pixel_width = tile_size * grid_resolution[0]
 grid_pixel_height = tile_size * grid_resolution[1]
 
