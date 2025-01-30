@@ -17,7 +17,7 @@ displacement_value = 0.2
 
 
 tile_size = 50
-grid_resolution = [3, 3]
+grid_resolution = [21, 21]
 grid_pixel_width = tile_size * grid_resolution[0]
 grid_pixel_height = tile_size * grid_resolution[1]
 
@@ -114,7 +114,7 @@ function setup() {
 
 
   // create checkbox to toggle show tiles
-  let checkbox5 = createCheckbox('Random Displacement', random_displacement);
+  let checkbox5 = createCheckbox('Random Text Displacement', random_displacement);
   checkbox5.parent(container);
   checkbox5.changed(toggle_random_displacement);
   checkbox5.style('margin-top', label_top_padding);
@@ -131,7 +131,7 @@ function setup() {
   let button8 = createButton('Generate displacements');
   button8.parent(container);
   button8.mousePressed(generate_displacements);
-  button8.style('margin-bottom', label_top_padding);
+  // button8.style('margin-bottom', label_top_padding);
 
 
 
@@ -160,7 +160,7 @@ function setup() {
   let button_colors = createButton('Generate Text Colors');
   button_colors.parent(container);
   button_colors.mousePressed(generate_text_colors);
-  button_colors.style('margin-bottom', label_top_padding);
+  // button_colors.style('margin-bottom', label_top_padding);
 
 
 
